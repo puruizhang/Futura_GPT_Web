@@ -1,0 +1,128 @@
+.auth-page {
+  margin-top: -10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60%;
+  margin: auto;
+  width: 80%;
+  flex-direction: column;
+  border-radius: 1em;
+  padding: 3em 3em 5%;
+  max-width: 1150px;
+  padding-bottom: 5% !important;
+  box-shadow: 0 24px 40px rgba(0,0,0,.07), 0 10.8529px 24.1177px rgba(0,0,0,.0456112), 0 4.50776px 10.0172px rgba(0,0,0,.035), 0 1.63037px 3.62304px rgba(0,0,0,.0243888);
+
+  .auth-logo {
+    transform: scale(1.4);
+  }
+
+  .auth-title {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 2;
+  }
+
+  .auth-tips {
+    font-size: 14px;
+  }
+
+  .auth-input {
+    width: 30%;
+    margin: 3vh 0;
+  }
+  .auth-input-code {
+    width: 23%;
+    margin: 3vh 0;
+    margin-left: 10px;
+  }
+
+  .auth-actions {
+    position: relative;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    //flex-direction: column;
+
+    //button:not(:last-child) {
+    //  width: 10%;
+    //  margin-bottom: 10px;
+    //}
+  }
+
+  button{
+    width: 18%;
+    margin-left: 8px;
+  }
+  .verification-code-wrapper {
+    width: 120px; // 调整验证码的宽度
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .verification-code {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .verification-code-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .regButton{
+    background-color: #50bfff;
+  }
+
+  .forgot-div {
+    position: absolute;
+    top: 50px;
+    left: 63%;
+  }
+
+  .reg-div {
+    position: absolute;
+    top: 50px;
+    left: 32%;
+  }
+
+  .forgotpassword{
+    font-size: 14px;
+    color: #a6ac79;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .forgotForm{
+    margin-bottom: 20px;
+    width: 30%;
+    display: flex;
+  }
+  .forgotFormSendCode{
+    flex-grow: 1;
+  }
+  .forgotFormVCode{
+    flex-grow: 5;
+  }
+  .forgotFormUpdateButton{
+    margin-left: 0;
+    width: 38%;
+  }
+
+  .loginButton{
+    width: 38%;
+  }
+}

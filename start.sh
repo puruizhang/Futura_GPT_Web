@@ -1,0 +1,1 @@
+nohup yarn install && yarn build && yarn start > 3314.out 2>&1 &
