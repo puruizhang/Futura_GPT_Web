@@ -346,38 +346,39 @@
 }
 
 .menuContainer {
+  align-items: center;
   color: #1a1b26;
-  width: 110px;
+  width: 100px;
   height: 100%;
   --tw-bg-opacity: 1;
   background-color: rgb(232 234 241 / var(--tw-bg-opacity));
   display: flex;
+  text-align: center;
   flex-direction: column;
   justify-content: left;
   margin-bottom: 10px;
 }
 
 .menuLogo {
-  padding: 10px 20px;
-  margin: 10px 10px;
-  border: none;
-  border-radius: 5px;
-  color: #333;
-  cursor: pointer;
-  height: 25px;
-  width: 35px;
-}
-
-.menuA {
-  padding: 10px 28px;
+  padding: 10px 15px;
   margin: 10px 7px;
   border: none;
   border-radius: 5px;
-  //background-color: #f0f0f0;
   color: #333;
-  font-size: 15px;
   cursor: pointer;
-  height: 25px;
+  height: 30px;
+}
+
+.menuA {
+  border-radius: 0.75rem;
+  padding: 10px 15px;
+  margin: 10px 7px;
+  border: none;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  //height: 25px;
   width: 32%;
   text-decoration: none;
 }

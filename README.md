@@ -1,10 +1,9 @@
 
-
 <h1 align="center">Futura AI</h1>
 
 Futura AI 一款基于 ChatGPT-Next-Web 打造的聊天机器人，支持多种模型，包括文字和绘图模型，方便用户选择。
 
-![GitHub](https://doraemon-website.oss-cn-shanghai.aliyuncs.com/2821709694674_.pic.jpg)
+[![GitHub](https://doraemon-website.oss-cn-shanghai.aliyuncs.com/2821709694674_.pic.jpg)](
 
 访问地址: https://futura.bestzpr.cn
 
@@ -38,7 +37,7 @@ Futura AI 一款基于 ChatGPT-Next-Web 打造的聊天机器人，支持多种�
 
 ## 鸣谢
 
-[ChatGPT-Next-Web](https://github.com/Yidadaa/ChatGPT-Next-Web)
+ChatGPT-Next-Web [ChatGPT-Next-Web](https://github.com/Yidadaa/ChatGPT-Next-Web)
 
 ### 相关项目
 
@@ -48,6 +47,3 @@ Futura AI 一款基于 ChatGPT-Next-Web 打造的聊天机器人，支持多种�
 ## 开源协议
 
 [MIT](https://opensource.org/license/mit/)
-
-
-![](https://doraemon-website.oss-cn-shanghai.aliyuncs.com/qrcode_1709696439316.jpg)

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from './deawing.module.scss';
-import {Input, showConfirm, showPrompt, showToast} from "./ui-lib";
+import {Input, showConfirm, showModal, showPrompt, showToast} from "./ui-lib";
 import {IconButton} from "./button";
 import {Button} from "emoji-picker-react/src/components/atoms/Button";
 import ResetIcon from "../icons/reload.svg";
@@ -11,6 +11,8 @@ import ShareIcon from "../icons/share.svg";
 import DeleteIcon from "../icons/delete.svg";
 import {InputRange} from "./input-range";
 import {copyToClipboard} from "../utils";
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 export function Drawing() {
     const [hoveredIndex, setHoveredIndex] = useState<null | number>(null);
@@ -18,7 +20,6 @@ export function Drawing() {
     const [prompt, setPrompt] = useState('');
     const [fileUrl, setFileUrl] = useState('');
     const [currentTab, setCurrentTab] = useState('me');
-    const [imageList, setImageList] = useState([]);
     const [columnCount, setColumnCount] = useState(6); // 设置瀑布流布局的列数
     const initialColumns = new Array(columnCount).fill([]).map(() => []);
     const [meColumns, setMeColumns] = useState<any[][]>(initialColumns);
@@ -67,8 +68,11 @@ export function Drawing() {
                         setPublicPageLast(1);
                     }
                 }
-                // setMeColumns(initialColumns);
-                // setPublicColumns(initialColumns);
+                if(pageNo === 0){
+                    setMeColumns(initialColumns);
+                    setPublicColumns(initialColumns);
+                }
+
                 data.data.forEach((imageUrl:any, index:number) => {
                     const columnIndex = index % columnCount;
                     if(isShare == 0){
@@ -91,6 +95,8 @@ export function Drawing() {
                                 return prevColumns; // 返回原始状态
                             }
                         });
+
+                        console.log(meColumns);
                     }else{
                         setPublicColumns(prevColumns => {
                             const allImageUrls = prevColumns.flatMap(column => column.map((item: string) => item)); // 获取所有图片链接
@@ -118,22 +124,6 @@ export function Drawing() {
             });
     };
 
-    // const imageList = [
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_web/7/7R5gERMwvEc_B36sGx4eU8/3a22d6290cc3.md.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/7/7R5gERMwvEc_B36sGx4eU8/2024-01-260579738174.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/7/7R5gERMwvEc_B36sGx4eU8/2024-01-263337720298.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/7/7R5gERMwvEc_B36sGx4eU8/2024-01-263364107138.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/7/7R5gERMwvEc_B36sGx4eU8/2024-01-263464208448.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/7/7R5gERMwvEc_B36sGx4eU8/2024-01-267302361783.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/7/7R5gERMwvEc_B36sGx4eU8/2024-01-268431964573.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_web/7/7R5gERMwvEc_B36sGx4eU8/844457de4c99.md.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_web/7/7R5gERMwvEc_B36sGx4eU8/9fda5b30232f.md.png',
-    //     'https://www.bestzpr.cn/upload/2023/07/00017-393256029.png',
-    //     'https://www.bestzpr.cn/upload/2023/07/%E4%B8%8B%E8%BD%BD%20(4).png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_web/7/7PFqftS6Fu-lKSeinBnEcB/2024-01-283419965510.png',
-    //     'https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_web/7/7PFqftS6Fu-lKSeinBnEcB/2024-01-282917671883.png'
-    //     // Add more image URLs
-    // ];
 
     const share2Public = async (e:any, drawRecordId:string, share:number) => {
         e.stopPropagation();
@@ -189,8 +179,6 @@ export function Drawing() {
         showToast('正在获取数据中，请稍后！');
         setPublicPageNo(publicPageNo + 1);
     }
-    // const columns: string[][] = new Array(columnCount).fill([]).map(() => []);
-
 
     useEffect(() => {
         getImgList(publicPageNo, currentTab === 'public' ? 1 : 0)
@@ -202,6 +190,8 @@ export function Drawing() {
 
     return (
         <div style={{width:'100%'}}>
+
+
             <div style={{'padding':'16px','display':'flex'}}>
                 <Input placeholder='请输入绘图提示词,最大长度100个字符' style={{'flex':'1','marginRight':'10px'}}
                        maxLength={100}
@@ -277,14 +267,16 @@ export function Drawing() {
                     }}
                 ></InputRange>
             </div>
-
+            {/*<hr style={{backgroundColor:'#ffffff'}}/>*/}
             {currentTab=='me' && (
                 <div style={{height:'100%'}}>
                     <div className="image-layout-container" style={{height:'66%'
                         ,display: 'grid', gridTemplateColumns: `repeat(${columnCount}, 1fr)`
                         , gap: '20px', padding: '16px', overflowY: 'auto'}}>
+                        <PhotoProvider>
                         {meColumns.map((column, columnIndex) => (
                             <div key={columnIndex}>
+
                                 {column.map((imageUrl, index) => (
                                     <div
                                         key={index}
@@ -299,7 +291,15 @@ export function Drawing() {
                                             position: 'relative', // 添加相对定位
                                         }}
                                     >
-                                        <img src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+
+                                            <PhotoView src={imageUrl.fileUrl}>
+                                                <img
+                                                    // onClick={() => handleZoomIn(imageUrl.fileUrl)}
+                                                    src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                            </PhotoView>
+
+
+
                                         {columnIndex + index * columnCount === hoveredIndex && (
                                             <div>
                                                 <div className="image-text"
@@ -317,8 +317,10 @@ export function Drawing() {
                                         )}
                                     </div>
                                 ))}
+
                             </div>
                         ))}
+                        </PhotoProvider>
                     </div>
                     {mePageLast==0 && (
                         <div style={{textAlign:'center'}}>
@@ -334,7 +336,9 @@ export function Drawing() {
                 <div style={{height:'100%'}}>
 
                     <div className="image-layout-container" style={{height:'66%' , display: 'grid', gridTemplateColumns: `repeat(${columnCount}, 1fr)`, gap: '20px', padding: '16px', overflowY: 'auto', maxHeight: 'calc(100vh - 32px)' }}>
-                    {publicColumns.map((column, columnIndex) => (
+
+                        <PhotoProvider>
+                        {publicColumns.map((column, columnIndex) => (
                             <div key={columnIndex}>
                                 {column.map((imageUrl, index) => (
                                     <div
@@ -350,7 +354,11 @@ export function Drawing() {
                                             position: 'relative', // 添加相对定位
                                         }}
                                     >
-                                        <img src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                        <PhotoView src={imageUrl.fileUrl}>
+                                            <img
+                                                // onClick={() => handleZoomIn(imageUrl.fileUrl)}
+                                                src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                        </PhotoView>
                                         {columnIndex + index * columnCount === hoveredIndex && (
                                             <div>
                                                 <div className="image-text"
@@ -372,6 +380,7 @@ export function Drawing() {
                             </div>
 
                     ))}
+                        </PhotoProvider>
                 </div>
                     {publicPageLast==0 && (
                         <div style={{textAlign:'center'}}>

@@ -79,7 +79,7 @@ function createEmptySession(): ChatSession {
     lastUpdate: Date.now(),
     lastSummarizeIndex: 0,
     isContext : true,
-    isNet : true,
+    isNet : false,
     mask: createEmptyMask(),
   };
 }

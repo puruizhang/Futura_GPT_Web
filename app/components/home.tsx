@@ -445,10 +445,10 @@ function Screen() {
           {userInfo && (
               <a
                   href="#"
-                  className={`${styles.menuB} ${currentPage === "chat" ? styles.active : ""}`}
+                  className={`${styles.menuA} ${currentPage === "chat" ? styles.active : ""}`}
                   onClick={() => handleMenuClick("draw")}
               >
-                绘画广场
+                绘画
               </a>
           )}
 
@@ -460,13 +460,13 @@ function Screen() {
           </a>
           <a
               href="https://www.yuque.com/zhang-w4zyu/azmtrc/go1z6pfv2ohz1kic?singleDoc# 《模型价格》" target={"_blank"}
-              className={`${styles.menuB} ${currentPage === "buy" ? styles.active : ""}`}
+              className={`${styles.menuA} ${currentPage === "buy" ? styles.active : ""}`}
           >
             模型价格
           </a>
           <a
               href="https://www.yuque.com/zhang-w4zyu/azmtrc/ggf872ki566u8e2d?singleDoc# 《GPT 常见问题》" target={"_blank"}
-              className={`${styles.menuB} ${currentPage === "buy" ? styles.active : ""}`}
+              className={`${styles.menuA} ${currentPage === "buy" ? styles.active : ""}`}
           >
             常见问题
           </a>

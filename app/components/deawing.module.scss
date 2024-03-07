@@ -146,12 +146,12 @@
 }
 
 .tab{
-  padding: 10px 28px;
+  padding: 10px 10px;
   margin: 10px 7px;
   border: none;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  color: #333;
+  //border-radius: 5px;
+  border-bottom: 2px solid #bbbbbb;
+  color: #000000;
   font-size: 15px;
   cursor: pointer;
   height: 25px;
@@ -161,8 +161,8 @@
 
 .tab.active {
   --tw-bg-opacity: 1;
-  background-color: #a8a5a5;
-  color: #050505;
+  border-bottom: 2px solid #18a058;
+  color: #18a058;
 }
 
 

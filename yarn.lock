@@ -5023,6 +5023,11 @@ react-markdown@^8.0.7:
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
 
+react-photo-view@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.npmmirror.com/react-photo-view/-/react-photo-view-1.2.4.tgz#0795c7bb961bacbc45d2e9cf91ec35ca5cddce1d"
+  integrity sha512-8G7yb0YgQuVgEMT3DopiROZyY8cgCDpba+G5MoxDkHNFOyqtw3r5T5tazYeifybPrvHWuKXj/bnAlBtQcpxyzQ==
+
 react-redux@^8.1.1:
   version "8.1.1"
   resolved "https://registry.npmmirror.com/react-redux/-/react-redux-8.1.1.tgz"
