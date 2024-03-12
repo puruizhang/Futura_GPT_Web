@@ -13,6 +13,7 @@ export type ChatModel = ModelType;
 export interface RequestMessage {
   role: MessageRole;
   content: string;
+  fileMessages: string[],
 }
 
 export interface LLMConfig {
@@ -42,6 +43,7 @@ export interface LLMUsage {
 
 export interface LLMModel {
   name: string;
+  index: number;
   available: boolean;
 }
 
@@ -139,9 +141,9 @@ export function getHeaders() {
     'Token': accessStore.accessCode,
     'sessionId':useChatStore.getState().currentSession().id,
     // 当前会话是否启用上下文
-    'isContext' : useChatStore.getState().currentSession().isContext,
+    'isContext' : useChatStore.getState().currentSession().isContext != undefined ? useChatStore.getState().currentSession().isContext : false,
     // 当前会话是否联网
-    'isNet' : useChatStore.getState().currentSession().isNet
+    'isNet' : useChatStore.getState().currentSession().isNet != undefined ? useChatStore.getState().currentSession().isNet : false
   };
 
   // const isAzure = accessStore.provider === ServiceProvider.Azure;

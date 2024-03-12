@@ -35,6 +35,8 @@ import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 import {
   ChatMessage,
@@ -485,8 +487,8 @@ export function ChatActions(props: {
   const currentModel = chatStore.currentSession().mask.modelConfig.model;
   const allModels = useAllModels();
   const models = useMemo(
-    () => allModels.filter((m) => m.available),
-    [allModels],
+      () => allModels.filter((m) => m.available).slice().sort((a, b) => a.index - b.index),
+      [allModels],
   );
   const [showModelSelector, setShowModelSelector] = useState(false);
 
@@ -542,21 +544,21 @@ export function ChatActions(props: {
         />
       )}
 
-      {/*<ChatAction*/}
-      {/*  onClick={nextTheme}*/}
-      {/*  text={Locale.Chat.InputActions.Theme[theme]}*/}
-      {/*  icon={*/}
-      {/*    <>*/}
-      {/*      {theme === Theme.Auto ? (*/}
-      {/*        <AutoIcon />*/}
-      {/*      ) : theme === Theme.Light ? (*/}
-      {/*        <LightIcon />*/}
-      {/*      ) : theme === Theme.Dark ? (*/}
-      {/*        <DarkIcon />*/}
-      {/*      ) : null}*/}
-      {/*    </>*/}
-      {/*  }*/}
-      {/*/>*/}
+      <ChatAction
+        onClick={nextTheme}
+        text={Locale.Chat.InputActions.Theme[theme]}
+        icon={
+          <>
+            {theme === Theme.Auto ? (
+              <AutoIcon />
+            ) : theme === Theme.Light ? (
+              <LightIcon />
+            ) : theme === Theme.Dark ? (
+              <DarkIcon />
+            ) : null}
+          </>
+        }
+      />
 
       <ChatAction
         onClick={props.showPromptHints}
@@ -758,6 +760,14 @@ function _Chat() {
   // only search prompts when user input is short
   const SEARCH_TEXT_LIMIT = 30;
   const onInput = (text: string) => {
+    // const markdownImages = imgFileUrlList.map((file) => {
+    //   return `![](${file.imgUrl})`;
+    // });
+    // console.log(markdownImages);
+    // console.log(imgFileUrlList);
+    // let markdownImagesString = ''
+    // markdownImagesString = markdownImages.join("\n"); // 使用换行符连接每个图片链接
+    // console.log(markdownImagesString+text);
     setUserInput(text);
     const n = text.trim().length;
 
@@ -792,6 +802,7 @@ function _Chat() {
       chatStore.onUserInput(userInput, []).then(() => setIsLoading(false));
     } else {
       // 处理包含对象的情况
+      setImgFileUrlList([]);
       const formattedList = imgFileUrlList.map(url => ({ imgUrl: url.imgUrl }));
       chatStore.onUserInput(userInput, formattedList).then(() => setIsLoading(false));
     }
@@ -945,7 +956,7 @@ function _Chat() {
 
     // resend the message
     setIsLoading(true);
-    chatStore.onUserInput(userMessage.content, imgFileUrlList.map(url => ({ imgUrl: url.imgUrl }))).then(() => setIsLoading(false));
+    chatStore.onUserInput(userMessage.content, userMessage.fileMessages.map(url => ({ imgUrl: url }))).then(() => setIsLoading(false));
 
     inputRef.current?.focus();
   };
@@ -1122,9 +1133,9 @@ function _Chat() {
   });
   const [imgFileUrlList, setImgFileUrlList] = useState<Array<{ imgUrl: string }>>([]);
   // 点击删除图片的处理函数
-  // const handleRemoveImage = (imageUrl: string) => {
-  //   setFileUrlList(fileUrlList.filter((url) => url !== imageUrl));
-  // };
+  const handleRemoveImage = (imageUrl: string) => {
+    setImgFileUrlList(imgFileUrlList.filter((imgFile) => imgFile.imgUrl !== imageUrl));
+  };
   // 放大图片
   const handleZoomIn = (fileUrl:string) =>{
     showModal({
@@ -1143,10 +1154,12 @@ function _Chat() {
       ),
     });
   }
-  const fileInputRef = useRef(null);
-  // const addData2FileUrlList = (data:string[]) => {
-  //   setFileUrlList([...fileUrlList, ...data]);
-  // };
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const addData2FileUrlList = (data:string[]) => {
+    // setImgFileUrlList([...imgFileUrlList, ...data]);
+    // console.log(imgFileUrlList)
+    setImgFileUrlList(prevList => [...prevList, ...data.map(url => ({ imgUrl: url }))]);
+  };
   const handleFileSubmit = async (event: any) => {
     event.preventDefault();
     console.log(event.target.files)
@@ -1155,8 +1168,8 @@ function _Chat() {
       showToast('请选择图片');
       return;
     }
-    if(imgFileUrlList.length + fileList.length > 10){
-      showToast('图片总量超过10张，请删减后再操作！');
+    if(imgFileUrlList.length + fileList.length > 5){
+      showToast('图片总量超过5张，请删减后再操作！');
       return;
     }
     const formData = new FormData();
@@ -1177,7 +1190,7 @@ function _Chat() {
         const result = await response.text();
 
         const fileUrlList = JSON.parse(result)
-        // addData2FileUrlList(fileUrlList.data);
+        addData2FileUrlList(fileUrlList.data);
 
       } else {
         showToast('文件上传失败');
@@ -1187,10 +1200,12 @@ function _Chat() {
     }
     }
 
-  // const handleButtonClick = (e:any) => {
-  //   e.stopPropagation();
-  //   fileInputRef.current.click();
-  // };
+  const handleButtonClick = () => {
+    // e.stopPropagation();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   // edit / insert message modal
   const [isEditingMessage, setIsEditingMessage] = useState(false);
 
@@ -1396,7 +1411,16 @@ function _Chat() {
                   )}
                   <div className={styles["chat-message-item"]}>
                     <Markdown
-                      content={message.content}
+                        content={message.fileMessages ? (
+                            message.fileMessages.map((file) => {
+                              return `![](${file})`;
+                            }).join("\n")+'\n' + message.content
+                        ) : (
+                            message.content
+                        )}
+                      // content={message.fileMessages.map((file) => {
+                      //   return `![](${file})`;
+                      // }).join("\n")+'\n' + message.content}
                       loading={
                         (message.preview || message.streaming) &&
                         message.content.length === 0 &&
@@ -1426,6 +1450,31 @@ function _Chat() {
         })}
       </div>
 
+      {chatStore.currentSession().mask.modelConfig.model == 'gpt-4-vision-preview-(极速、联网支持、图片解读)-(1次/2500积分🔥)'
+      || chatStore.currentSession().mask.modelConfig.model == 'gemini-pro-vision-(极速、联网支持、识图)-(1次/1500积分🔥)' && (
+          <div style={{'marginBottom':'7px'}}>
+            <label style={{'color':'rgb(144 144 144)',fontSize:'13px',marginLeft:'20px'}}>该模型支持对图片文件进行提问，请上传图片,最大图片数量：5张，图片解读较正常文本回答耗时较长请耐心等待</label>
+            <br/>
+            {imgFileUrlList.length > 0 && (
+                <div style={{'display':'flex','marginTop':'10px'}}>
+                  {imgFileUrlList.map((imgFile, index) => (
+                      <div key={index} style={{'marginLeft':'10px'}}>
+                        <PhotoProvider>
+                          <PhotoView src={imgFile.imgUrl}>
+                            <img src={imgFile.imgUrl} alt="" width={50} height={50}/>
+                          </PhotoView>
+                        </PhotoProvider>
+                        <IconButton
+                                    icon={<DeleteIcon/>} onClick={() => handleRemoveImage(imgFile.imgUrl)}
+                        />
+                      </div>
+                  ))}
+                </div>
+            )}
+          </div>
+
+      )}
+
       <div className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
@@ -1445,44 +1494,34 @@ function _Chat() {
             onSearch("");
           }}
         />
-        {/*{chatStore.currentSession().mask.modelConfig.model == 'gpt-4-vision-preview-(极速、联网支持、图片解读)' && (*/}
-        {/*    <div style={{'marginBottom':'7px'}}>*/}
-        {/*      <input type="file" onChange={handleFileSubmit} style={{ display: 'none' }} ref={fileInputRef} multiple accept="image/*"/>*/}
-        {/*      <IconButton*/}
-        {/*          icon={<UploadIcon />}*/}
-        {/*          // text={Locale.UI.Import}*/}
-        {/*          bordered*/}
-        {/*          onClick={handleButtonClick}*/}
-
-        {/*      />*/}
-        {/*      <label style={{'color':'rgb(144 144 144)'}}>该模型支持对图片文件进行提问，请上传图片,最大图片数量：10张，图片解读较正常文本回答耗时较长请耐心等待</label>*/}
-        {/*      <br/>*/}
-        {/*      {fileUrlList.length > 0 && (*/}
-        {/*          <div style={{'display':'flex','marginTop':'10px'}}>*/}
-        {/*            {fileUrlList.map((url, index) => (*/}
-        {/*                <div key={index} style={{'marginLeft':'10px'}}>*/}
-        {/*                  <img src={url} alt="" width={50} height={50} onClick={() => handleZoomIn(url)}/>*/}
-        {/*                  <IconButton style={{ position: 'absolute', top: '0', right: '0' }}*/}
-        {/*                              icon={<DeleteIcon/>} onClick={() => handleRemoveImage(url)}*/}
-        {/*                  />*/}
-        {/*                  /!*<button onClick={() => handleRemoveImage(url)}>删除</button>*!/*/}
-        {/*                </div>*/}
-        {/*            ))}*/}
-        {/*          </div>*/}
-        {/*      )}*/}
-        {/*    </div>*/}
-
-        {/*)}*/}
-
-        {/*<p className="uploadImg">*/}
-        {/*  <input*/}
-        {/*      type="file"*/}
-        {/*      accept="image/*"*/}
-        {/*      className={styles["chat-input-file"]}*/}
-        {/*      onChange={(e) => handleFileSubmit(e)}*/}
-        {/*  />*/}
-        {/*</p>*/}
         <div className={styles["chat-input-panel-inner"]}>
+          {'gpt-4-vision-preview-(极速、联网支持、图片解读)-(1次/2500积分🔥)' == chatStore.currentSession().mask.modelConfig.model && (
+              <div style={{marginRight:'10px',height:'79px'}}>
+                <input type="file" onChange={handleFileSubmit} style={{ display: 'none' }} ref={fileInputRef} multiple accept="image/*"/>
+                <IconButton
+                    icon={<UploadIcon />}
+                    className={styles["chat-input-upload"]}
+                    // text={Locale.UI.Import}
+                    bordered
+                    onClick={handleButtonClick}
+
+                />
+              </div>
+          )}
+
+          {'gemini-pro-vision-(极速、联网支持、识图)-(1次/1500积分🔥)' == chatStore.currentSession().mask.modelConfig.model && (
+              <div style={{marginRight:'10px',height:'79px'}}>
+                <input type="file" onChange={handleFileSubmit} style={{ display: 'none' }} ref={fileInputRef} multiple accept="image/*"/>
+                <IconButton
+                    icon={<UploadIcon />}
+                    className={styles["chat-input-upload"]}
+                    // text={Locale.UI.Import}
+                    bordered
+                    onClick={handleButtonClick}
+
+                />
+              </div>
+          )}
 
           <textarea
             ref={inputRef}

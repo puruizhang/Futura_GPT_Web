@@ -14,7 +14,7 @@ const cn = {
     Title: "登录",
     RegTitle: "注册",
     Tips: "请输入账号密码",
-    RegTips: "请输入邮箱验证码",
+    RegTips: "请输入邮箱验证码,建议使用QQ邮箱、163邮箱，部分邮箱可能出现收不到验证码的情况",
     SubTips: "",
     Input: "请输入账号密码",
     Confirm: "登录",

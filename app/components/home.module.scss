@@ -41,12 +41,14 @@
 
 .sidebar {
   display: grid;
-  color: #100f0f;
+  //color: #100f0f;
   top: 0;
   width: var(--sidebar-width);
   box-sizing: border-box;
   padding: 20px;
-  background-color: #fafbfc;
+  background-color: var(--white);
+  color: var(--black);
+  border: var(--border-in-light);
   //display: flex;
   //flex-direction: column;
   box-shadow: inset -2px 0px 2px 0px rgb(0, 0, 0, 0.05);
@@ -347,11 +349,13 @@
 
 .menuContainer {
   align-items: center;
-  color: #1a1b26;
+  //color: #1a1b26;
   width: 100px;
   height: 100%;
   --tw-bg-opacity: 1;
-  background-color: rgb(232 234 241 / var(--tw-bg-opacity));
+  background-color: var(--white);
+  color: var(--black);
+  border: var(--border-in-light);
   display: flex;
   text-align: center;
   flex-direction: column;
@@ -374,8 +378,11 @@
   padding: 10px 15px;
   margin: 10px 7px;
   border: none;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-  color: #333;
+  //background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  //color: #333;
+  background-color: var(--white);
+  color: var(--black);
+  border: var(--border-in-light);
   font-size: 14px;
   cursor: pointer;
   //height: 25px;
@@ -416,17 +423,19 @@
 }
 
 .menuA:hover {
-  background-color: #e0e0e0;
+  border: solid 1px #18a058;
+  color: var(--black);
 }
 
 .menuA.active {
   --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-  color: #050505;
+  //background-color: #8dd45e;
+  border: solid 2px #18a058;
+  color: var(--black);
 }
 
 .mainContainer {
-  background-color: #f2f2f2;
+  background-color: var(--white);
   margin: auto;
   width: 100%;
   height: 100%;
@@ -446,9 +455,12 @@
   box-shadow: 0 24px 40px rgba(0,0,0,.07), 0 10.8529px 24.1177px rgba(0,0,0,.0456112), 0 4.50776px 10.0172px rgba(0,0,0,.035), 0 1.63037px 3.62304px rgba(0,0,0,.0243888);
 }
 .homeContainer {
-  color: #000000;
+  background-color: var(--white);
+  color: var(--black);
+  border: var(--border-in-light);
+  //color: #000000;
   padding-top: 0%;
-  background-color: #f5fcfc;
+  //background-color: var(--white);
   margin: auto;
   width: 100%;
   height: 100%;
@@ -534,15 +546,18 @@
 }
 
 .menu_a{
-  color: #1a1b26;
+  color: var(--black);
   text-decoration: none;
 }
 
 .userInfoContainer {
   display: flex;
   flex-direction: row;
-  color: #000000;
-  background-color: #f2f2f2;
+  //color: #000000;
+  //background-color: #f2f2f2;
+  background-color: var(--white);
+  color: var(--black);
+  //border: var(--border-in-light);
   margin: auto;
   width: 100%;
   height: 100%;
@@ -551,7 +566,7 @@
 
 .userBaseInfo{
   width: 27%;
-  background-color: rgb(255,255,255,1);
+  background-color: var(--white);
   overflow: auto;
 }
 
@@ -583,7 +598,7 @@
 .userRecord{
   z-index: 2;
   width: 74%;
-  background-color: rgb(255,255,255,1);
+  background-color: var(--white);
 }
 
 .userRechargeRecord{
@@ -599,7 +614,7 @@
   //bottom: 0;
   width: 2px;
   //background-color: red;
-  background-color: var(--n-border-color);
+  background-color: var(--bar-color);
   transition: background-color .3s var(--n-bezier);
 }
 
@@ -644,7 +659,7 @@
   //top: 0;
   //bottom: 0;
   //background-color: red;
-  background-color: #f5efef;
+  background-color: var(--border-in-light);
   transition: background-color .3s var(--n-bezier);
 }
 
@@ -667,11 +682,12 @@
   height: 30px;
   cursor: pointer;
   margin-left: 10px;
-  color: #d95151;
+  color: var(--black);
   box-sizing: border-box;
   border-width: 1px;
   border-style: solid;
-  border-color: #e5e7eb;
+  //border-color: #e5e7eb;
+  border: var(--border-in-light);
 }
 
 .showcaseList{
@@ -682,7 +698,10 @@
 }
 
 .card{
-  background-color: #fffbfb;
+  //background-color: #fffbfb;
+  background-color: var(--white);
+  color: var(--black);
+  border: var(--border-in-light);
   border-radius: 0.4rem;
   box-shadow: 0 5px 40px #0003;
   display: flex;
@@ -717,7 +736,10 @@
 }
 
 .showcaseCardBody_fqoj {
-  color: #1c1e21;
+  //color: #1c1e21;
+  background-color: var(--white);
+  color: var(--black);
+  //border: var(--border-in-light);
   font-size: smaller;
   line-height: 1.66;
   max-height: 300px;
@@ -762,4 +784,9 @@
   margin-top: 20px;
   border-radius: 8px;
   border: 1px solid rgba(0,0,0,0);
+}
+
+.menuLogoIcon{
+  font-size: 1.575rem;
+  line-height: 0.25rem;
 }

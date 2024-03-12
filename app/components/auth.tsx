@@ -83,6 +83,7 @@ export function AuthPage() {
                     accessStore.update(
                         (access) => (access.accessCode = data.data),
                     );
+
                     // 跳转到首页
                     window.location.href = '/';
                 }else{

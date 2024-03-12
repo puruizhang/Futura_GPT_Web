@@ -6,7 +6,7 @@ export function collectModelTable(
 ) {
   const modelTable: Record<
     string,
-    { available: boolean; name: string; displayName: string }
+    { available: boolean; name: string; displayName: string,index:number }
   > = {};
 
   // default models
@@ -15,6 +15,7 @@ export function collectModelTable(
       (modelTable[m.name] = {
         ...m,
         displayName: m.name,
+          index: m.index,
       }),
   );
 
@@ -37,6 +38,7 @@ export function collectModelTable(
         name,
         displayName: displayName || name,
         available,
+        index: 0,
       };
     });
   return modelTable;

@@ -101,102 +101,139 @@ export const KnowledgeCutOffDate: Record<string, string> = {
 };
 
 export const DEFAULT_MODELS = [
-  {
-    name: "Futura AI Draw-🎨",
-    available: true,
-  },
-
-
-  {
-    name: "gpt-3.5-turbo-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "gpt-3.5-turbo-16k-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "gpt-4-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "gpt-4-32k-(极速、联网支持)",
-    available: true,
-  },
   // {
-  //   name: "gpt-4-vision-preview-(极速、联网支持、图片解读)",
-  //   available: false,
+  //   name: "Futura AI Draw-🎨-(1次/3000积分🔥)",
+  //   available: true,
   // },
   {
-    name: "gpt-4-turbo-preview-(极速、联网支持)",
+    name: "GPT3.5-Turbo-(限免🔥🔥🔥-不支持联网)",
     available: true,
+    index : 1,
+  },
+  {
+    name: "gpt-4-(限免🔥🔥🔥-不支持联网)",
+    available: true,
+    index : 2,
+  },
+  {
+    name: "清华智谱-(限免🔥🔥-不支持联网)",
+    available: true,
+    index : 3,
+  },
+  {
+    name: "讯飞星火-(限免🔥-不支持联网)",
+    available: true,
+    index : 4,
   },
 
   {
-    name: "gemini-pro-(极速、联网支持)",
+    name: "gpt-3.5-turbo-(极速、联网支持)-(1次/20积分🔥)",
     available: true,
+    index : 5,
   },
   {
-    name: "gemini-pro-vision-(极速、联网支持)",
+    name: "gpt-3.5-turbo-16k-(极速、联网支持)-(1次/40积分🔥)",
     available: true,
+    index : 6,
   },
   {
-    name: "claude-1-100k-(极速、联网支持)",
+    name: "gpt-4-(极速、联网支持)-(1次/1000积分🔥)",
     available: true,
+    index : 7,
   },
   {
-    name: "claude-1.3-(极速、联网支持)",
+    name: "gpt-4-32k-(极速、联网支持)-(1次/2000积分🔥)",
     available: true,
+    index : 8,
   },
   {
-    name: "claude-1.3-100k-(极速、联网支持)",
+    name: "gpt-4-vision-preview-(极速、联网支持、图片解读)-(1次/2500积分🔥)",
     available: true,
+    index : 9,
   },
   {
-    name: "claude-2-(极速、联网支持)",
+    name: "gpt-4-turbo-preview-(极速、联网支持)-(按文本长度计算🔥)",
     available: true,
-  },
-  {
-    name: "llama-2-70b-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "llama-2-13b-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "llama-2-7b-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "code-llama-34b-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "code-llama-34b-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "code-llama-7b-(极速、联网支持)",
-    available: true,
-  },
-  {
-    name: "阿里千问-72b-(极速、联网支持)",
-    available: true,
+    index : 10,
   },
 
   {
-    name: "清华智谱-(限免-不支持联网)",
+    name: "gemini-pro-(极速、联网支持)-(1次/300积分🔥)",
     available: true,
+    index : 11,
   },
   {
-    name: "讯飞星火-(限免-不支持联网)",
+    name: "gemini-pro-vision-(极速、联网支持、识图)-(1次/1500积分🔥)",
     available: true,
+    index : 12,
   },
   {
-    name: "GPT3.5-Turbo-(限免-不支持联网)",
+    name: "claude-1-100k-(极速、联网支持)-(1次/50积分🔥)",
     available: true,
+    index : 13,
   },
+  {
+    name: "claude-1.3-(极速、联网支持)-(1次/50积分🔥)",
+    available: true,
+    index : 14,
+  },
+  {
+    name: "claude-1.3-100k-(极速、联网支持)-(1次/60积分🔥)",
+    available: true,
+    index : 15,
+  },
+  {
+    name: "claude-3-opus-(极速、联网支持)-(按文本长度计算🔥🔥🔥🔥🔥)",
+    available: true,
+    index : 16,
+  },
+  {
+    name: "claude-3-sonnet-(极速、联网支持)-(按文本长度计算🔥🔥🔥🔥🔥)",
+    available: true,
+    index : 17,
+  },
+  {
+    name: "claude-2-(极速、联网支持)-(按文本长度计算🔥)",
+    available: true,
+    index : 18,
+  },
+  {
+    name: "llama-2-70b-(极速、联网支持)-(1次/30积分🔥)",
+    available: true,
+    index : 19,
+  },
+  {
+    name: "llama-2-13b-(极速、联网支持)-(1次/30积分🔥)",
+    available: true,
+    index : 20,
+  },
+  {
+    name: "llama-2-7b-(极速、联网支持)-(1次/30积分🔥)",
+    available: true,
+    index : 21,
+  },
+  {
+    name: "code-llama-34b-(极速、联网支持)-(1次/50积分🔥)",
+    available: true,
+    index : 22,
+  },
+  {
+    name: "code-llama-13b-(极速、联网支持)-(1次/30积分🔥)",
+    available: true,
+    index : 23,
+  },
+  {
+    name: "code-llama-7b-(极速、联网支持)-(1次/30积分🔥)",
+    available: true,
+    index : 24,
+  },
+  {
+    name: "阿里千问-72b-(极速、联网支持)-(1次/200积分🔥)",
+    available: true,
+    index : 25,
+  },
+
+
 ] as const;
 
 export const CHAT_PAGE_SIZE = 15;

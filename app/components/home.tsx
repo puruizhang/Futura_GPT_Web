@@ -8,6 +8,9 @@ import React, { useState, useEffect } from "react";
 import styles from "./home.module.scss";
 import HomeIcon from "../icons/home.svg";
 import CloseIcon from "../icons/close.svg";
+import LiaotianIcon from "../icons/liaotian.svg";
+import AppIcon from "../icons/app.svg";
+import DrawIcon from "../icons/draw.svg";
 import BotIcon from "../icons/bot.svg";
 import NoticeIcon from "../icons/notice.svg";
 import BotIconPng from "../icons/bot.png";
@@ -27,6 +30,10 @@ import { ErrorBoundary } from "./error";
 import Locale, { getISOLang, getLang } from "../locales";
 import MaskIcon from "../icons/mask.svg";
 import data from './../data/prompt_zh.json';
+
+const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
+  loading: () => <LoadingIcon />,
+});
 
 import {
   HashRouter as Router,
@@ -99,25 +106,25 @@ export function useSwitchTheme() {
     // document.body.classList.remove("light");
     document.body.classList.remove("dark");
 
-    // if (config.theme === "dark") {
-    //   document.body.classList.add("dark");
-    // } else if (config.theme === "light") {
+    if (config.theme === "dark") {
+      document.body.classList.add("dark");
+    } else if (config.theme === "light") {
       document.body.classList.add("light");
-    // }
+    }
 
-    // const metaDescriptionDark = document.querySelector(
-    //   'meta[name="theme-color"][media*="dark"]',
-    // );
+    const metaDescriptionDark = document.querySelector(
+      'meta[name="theme-color"][media*="dark"]',
+    );
     const metaDescriptionLight = document.querySelector(
       'meta[name="theme-color"][media*="light"]',
     );
 
     if (config.theme === "auto") {
-      // metaDescriptionDark?.setAttribute("content", "#151515");
+      metaDescriptionDark?.setAttribute("content", "#151515");
       metaDescriptionLight?.setAttribute("content", "#fafafa");
     } else {
       const themeColor = getCSSVar("--theme-color");
-      // metaDescriptionDark?.setAttribute("content", themeColor);
+      metaDescriptionDark?.setAttribute("content", themeColor);
       metaDescriptionLight?.setAttribute("content", themeColor);
     }
   }, [config.theme]);
@@ -174,12 +181,7 @@ function Screen() {
   const [showLogoutButton, setShowLogoutButton] = useState(false);
   const [showModal, setShowModal] = useState(false); // 控制模态窗口的显示与隐藏
   const [inputValue, setInputValue] = useState(""); // 兑换码的输入值
-  // 已使用积分-gpt
-  const [pointsBalance, setPointsBalance] = useState(0);
-  // const [pointsFuturaBalance, setPointsFuturaBalance] = useState(0);
   // 使用的限时免费的额度
-  const [pointsBalanceUseFreeTotal, setPointsBalanceUseFreeTotal] = useState(0);
-
   const [pointsBalanceTotal, setPointsBalanceTotal] = useState(0);
 
   const [isActiveStatuView, setIsActiveStatuView] = useState(false);
@@ -265,8 +267,11 @@ function Screen() {
   const [isUserInfoLoading, setIsUserInfoLoading] = useState(false);
   const [isExhangeCodeLoading, setIsExhangeCodeLoading] = useState(false);
 
-  const [isEdituserInfo, setIsEdituserInfo] = useState(false);
+  const [shuomingMarkdownContent, setShuomingMarkdownContent] = useState('');
+  const [modelMarkdownContent, setModelMarkdownContent] = useState('');
 
+  const [isEdituserInfo, setIsEdituserInfo] = useState(false);
+  const updateConfig = config.update;
   const qqNumber = '854554762';
   const handleQQClick = () => {
     window.location.href = `https://wpa.qq.com/msgrd?v=3&uin=${qqNumber}&site=qq&menu=yes&jumpflag=1`;
@@ -337,10 +342,7 @@ function Screen() {
           .then(data => {
             // 处理返回的用户信息数据
             if(data.success){
-              setPointsBalanceTotal(data.data.pointsBalanceTotal);
-              setPointsBalanceUseFreeTotal(data.data.pointsBalanceUseFreeTotal);
-              // 这里放置要执行的代码
-              setPointsBalance(data.data.pointsBalanceUseTotal)
+              setPointsBalanceTotal(data.data);
               // let timeoutId;
               // for(let i=0; i<data.data.pointsBalanceUseTotal; i++){
               //   timeoutId = setTimeout(() => {
@@ -386,6 +388,7 @@ function Screen() {
             // 处理返回的用户信息数据
             if(data.success){
               setUserInfo(data.data);
+              // updateConfig((config) => (config.avatar = userInfo?.avatarUrl));
               setUserName(data.data.userName)
             }else{
               showToast('请求频繁,请稍后再试！')
@@ -402,6 +405,56 @@ function Screen() {
   useEffect(() => {
     getUserInfo()
     getPoint(true);
+
+    const readMarkdownFile = () => {
+      try {
+        fetch('https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_doc/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.text();
+            })
+            .then(data => {
+              setShuomingMarkdownContent(data);
+            })
+            .catch(error => {
+              console.error('Error fetching file:', error);
+            });
+        fetch('https://doraemon-website.oss-cn-shanghai.aliyuncs.com/futura_doc/%E6%A8%A1%E5%9E%8B%E4%BB%B7%E6%A0%BC.md')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.text();
+            })
+            .then(data => {
+              setModelMarkdownContent(data);
+            })
+            .catch(error => {
+              console.error('Error fetching file:', error);
+            });
+      } catch (error) {
+        console.error('Error reading Markdown file:', error);
+      }
+    };
+
+    readMarkdownFile();
+
+    // const intervalId = setInterval(() => {
+    //   const startTime = performance.now();
+    //   // 设置断点
+    //   debugger;
+    //   const currentTime = performance.now();
+    //   // 设置一个阈值，例如100毫秒
+    //   if (currentTime - startTime > 100) {
+    //     window.location.href = 'about:blank';
+    //   }
+    // }, 100);
+    //
+    // return () => {
+    //   clearInterval(intervalId);
+    // };
   }, []);
 
 
@@ -431,7 +484,8 @@ function Screen() {
                 className={`${styles.menu_a}`}
                 onClick={() => handleMenuClick("home")}
             >
-              首页
+              <AppIcon className={styles.menuLogoIcon}/>
+              <div>首页</div>
             </a>
           </div>
 
@@ -440,15 +494,17 @@ function Screen() {
               className={`${styles.menuA} ${currentPage === "chat" ? styles.active : ""}`}
               onClick={() => handleMenuClick("chat")}
           >
-            聊天
+            <LiaotianIcon className={styles.menuLogoIcon}/>
+            <div>聊天</div>
           </a>
           {userInfo && (
               <a
                   href="#"
-                  className={`${styles.menuA} ${currentPage === "chat" ? styles.active : ""}`}
+                  className={`${styles.menuA} ${currentPage === "draw" ? styles.active : ""}`}
                   onClick={() => handleMenuClick("draw")}
               >
-                绘画
+                <DrawIcon className={styles.menuLogoIcon}/>
+                <div>绘画</div>
               </a>
           )}
 
@@ -459,17 +515,18 @@ function Screen() {
             订阅
           </a>
           <a
-              href="https://www.yuque.com/zhang-w4zyu/azmtrc/go1z6pfv2ohz1kic?singleDoc# 《模型价格》" target={"_blank"}
-              className={`${styles.menuA} ${currentPage === "buy" ? styles.active : ""}`}
+              onClick={() => handleMenuClick("model")}
+              className={`${styles.menuA} ${currentPage === "model" ? styles.active : ""}`}
           >
             模型价格
           </a>
           <a
-              href="https://www.yuque.com/zhang-w4zyu/azmtrc/ggf872ki566u8e2d?singleDoc# 《GPT 常见问题》" target={"_blank"}
-              className={`${styles.menuA} ${currentPage === "buy" ? styles.active : ""}`}
+              onClick={() => handleMenuClick("shuoming")}
+              className={`${styles.menuA} ${currentPage === "shuoming" ? styles.active : ""}`}
           >
-            常见问题
+            使用说明
           </a>
+
 
 
           {userInfo && !isActiveStatuView && (
@@ -529,8 +586,14 @@ function Screen() {
                 >
                  <div>
                     <h1>欢迎使用 Futura AI</h1>
+                    <span>进群👗联系：zpr110010010；提供bug或是有效建议将会获得积分大礼包奖励🥇</span>
                    <p>
-                     重磅来袭 绘图广场上线啦！  🎨
+                     📌1.重磅来袭 Claude 3.0 亮相，全新的模型，全新的体验，全新的未来！
+                     Claude 3 拥有人类般的理解能力，能学习冷门语言、领悟量子物理理论，还意识到人类在测试它。
+                     你可以在这里体验到最新的模型，最新的技术，最新的体验，最新的未来！
+                   </p>
+                   <p>
+                     📌2.gemini-pro-vision 和 gpt-4-vision-preview 两款视觉模型上线，支持图片识别、基于图片内容进行提问等功能。
                    </p>
                     <p>
                       系统内置阶段提供 💰免费的内置高速模型-赶快来免费使用吧！！！
@@ -554,7 +617,21 @@ function Screen() {
           )}
 
         </div>
+        {currentPage === "shuoming" && (
+            <div style={{width:'80%',height:'90%',padding:'20px',margin:'auto',overflow: 'auto' }}>
+              <Markdown
+                  content={shuomingMarkdownContent}
+              />
+            </div>
 
+        )}
+        {currentPage === "model" && (
+            <div style={{width:'80%',height:'90%',padding:'20px',margin:'auto',overflow: 'auto' }}>
+              <Markdown
+                  content={modelMarkdownContent}
+              />
+            </div>
+        )}
       {currentPage === "home" && !isActiveStatuView && (
           <div className={styles.homeContainer} style={{ textAlign: "center" }}>
             <h1>Futura AI</h1>
@@ -638,14 +715,14 @@ function Screen() {
                   </div>
                 </div>
 
-                <div style={{'position': 'absolute', 'bottom': '0%', 'left': '104px', 'width': '100%','color':'#6e7781'
-                ,'backgroundColor': 'rgb(250 251 252)','zIndex': 1,'height':'200px','paddingLeft':'30px'}}>
+                <div style={{'position': 'absolute', 'bottom': '0%', 'left': '104px', 'width': '100%','color': 'var(--black)'
+                ,'backgroundColor': 'var(--white)','zIndex': 1,'height':'200px','paddingLeft':'30px'}}>
                   {/* 展示积分信息 */}
                   <div style={{'textAlign': 'left'}}>
                     <h3 style={{'marginBottom': '10px'}}>积分信息</h3>
                     <div style={{'marginBottom': '5px',color:'#666464'}}>
                       <BrainIcon width={20} />
-                      <span>积分：{pointsBalance} / {pointsBalanceTotal}</span>
+                      <span>剩余积分：{pointsBalanceTotal}</span>
                       <ResetIcon style={{'marginLeft':'10px','cursor':'pointer'}} onClick={() => getPoint(false)}/>
                       <br/>
                       {/*<BrainIcon width={20} />*/}

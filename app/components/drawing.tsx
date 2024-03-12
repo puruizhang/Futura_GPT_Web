@@ -19,12 +19,14 @@ export function Drawing() {
     const [isLoading, setIsLoading] = useState(false);
     const [prompt, setPrompt] = useState('');
     const [fileUrl, setFileUrl] = useState('');
-    const [currentTab, setCurrentTab] = useState('me');
+    const [currentTab, setCurrentTab] = useState('public');
     const [columnCount, setColumnCount] = useState(6); // 设置瀑布流布局的列数
     const initialColumns = new Array(columnCount).fill([]).map(() => []);
     const [meColumns, setMeColumns] = useState<any[][]>(initialColumns);
     const [publicColumns, setPublicColumns] = useState<any[][]>(initialColumns);
     const accessStore = useAccessStore.getState();
+    const [meImgCount, setMeImgCount] = useState(0);
+    const [publicImgCount, setPublicImgCount] = useState(0);
     const [mePageNo, setMePageNo] = useState(0);
     const [mePageLast, setMePageLast] = useState(0);
     const [publicPageNo, setPublicPageNo] = useState(0);
@@ -58,11 +60,13 @@ export function Drawing() {
                     return;
                 }
                 if(isShare == 0){
+                    setMeImgCount(data.data.length);
                     console.log(data.data.length)
                     if(data.data.length < 10){
                         setMePageLast(1);
                     }
                 }else{
+                    setPublicImgCount(data.data.length);
                     console.log(data.data.length)
                     if(data.data.length < 10){
                         setPublicPageLast(1);
@@ -193,7 +197,7 @@ export function Drawing() {
 
 
             <div style={{'padding':'16px','display':'flex'}}>
-                <Input placeholder='请输入绘图提示词,最大长度100个字符' style={{'flex':'1','marginRight':'10px'}}
+                <Input placeholder='请输入绘图提示词,最大长度100个字符，3000积分一张' style={{'flex':'1','marginRight':'10px'}}
                        maxLength={100}
                        onChange={(e) => setPrompt(e.currentTarget.value)}
                 ></Input>
@@ -205,8 +209,12 @@ export function Drawing() {
                     bordered
                     text='生成图片'
                     onClick={async () => {
+                        if(prompt.length === 0){
+                            showToast('请输入绘图提示词！');
+                            return;
+                        }
                         setIsLoading(true);
-                        setFileUrl('https://static.iamxk.com/wp-content/uploads/2018/01/568200051cf000e77269.gif')
+                        setFileUrl('https://doraemon-website.oss-cn-shanghai.aliyuncs.com/8fe4f0de17809abdc5d2c81f9f5f65f4.gif')
                         fetch(`${API_BASE_URL}/v1/api/draw`,{
                             method: 'POST',
                             headers: {
@@ -231,8 +239,9 @@ export function Drawing() {
                                 // 把图片链接加载到 预定区域
                                 setFileUrl(data.data)
                                 // 刷新我的图库列表
-                                setMeColumns(initialColumns);
+                                // setMeColumns(initialColumns);
                                 getImgList(0,0);
+                                getImgList(0,1);
                             })
                             .catch(error => {
                                 console.error('Error:', error);
@@ -243,9 +252,14 @@ export function Drawing() {
             </div>
             {fileUrl && (
                 <div style={{textAlign:'center'}}>
-                    <img src={fileUrl}
-                         width='160px' height='160px' style={{padding:'16px',borderRadius: '8px',margin:'auto',border: '2px solid #ccc'}}/>
+                    <PhotoProvider>
+                        <PhotoView src={fileUrl}>
+                             <img src={fileUrl}
+                                 width='160px' height='160px' style={{padding:'16px',borderRadius: '8px',margin:'auto',border: '2px solid #ccc'}}/>
+                        </PhotoView>
+                    </PhotoProvider>
                     <hr/>
+
                     <a href={'#'} onClick={foldDraw}>收起</a>
                 </div>
             )}
@@ -270,59 +284,70 @@ export function Drawing() {
             {/*<hr style={{backgroundColor:'#ffffff'}}/>*/}
             {currentTab=='me' && (
                 <div style={{height:'100%'}}>
-                    <div className="image-layout-container" style={{height:'66%'
-                        ,display: 'grid', gridTemplateColumns: `repeat(${columnCount}, 1fr)`
-                        , gap: '20px', padding: '16px', overflowY: 'auto'}}>
-                        <PhotoProvider>
-                        {meColumns.map((column, columnIndex) => (
-                            <div key={columnIndex}>
-
-                                {column.map((imageUrl, index) => (
-                                    <div
-                                        key={index}
-                                        className={`image-item ${columnIndex + index * columnCount === hoveredIndex ? 'hovered' : ''}`}
-                                        onMouseEnter={() => handleMouseEnter(columnIndex, index)}
-                                        onMouseLeave={handleMouseLeave}
-                                        style={{
-                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                            borderRadius: '8px',
-                                            // overflow: 'hidden',
-                                            marginBottom: '20px',
-                                            position: 'relative', // 添加相对定位
-                                        }}
-                                    >
-
-                                            <PhotoView src={imageUrl.fileUrl}>
-                                                <img
-                                                    // onClick={() => handleZoomIn(imageUrl.fileUrl)}
-                                                    src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                                            </PhotoView>
+                    {meImgCount == 0 && (
+                        <div style={{textAlign:'center',marginTop:'50px'}}>
+                            <span>图库还没有您的作品！</span>
+                        </div>
+                    )}
 
 
+                        {meImgCount > 0 && (
+                            <div className="image-layout-container" style={{height:'66%'
+                                ,display: 'grid', gridTemplateColumns: `repeat(${columnCount}, 1fr)`
+                                , gap: '20px', padding: '16px', overflowY: 'auto'}}>
+                            <PhotoProvider>
+                                {meColumns.map((column, columnIndex) => (
+                                    <div key={columnIndex}>
 
-                                        {columnIndex + index * columnCount === hoveredIndex && (
-                                            <div>
-                                                <div className="image-text"
-                                                     onClick={() => {
-                                                         copyToClipboard(imageUrl.prompt);
-                                                     }}
-                                                     style={{ cursor: 'pointer', position: 'absolute', bottom: '0', left: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: '0 0 8px 8px' }}>
-                                                    {imageUrl.prompt}
-                                                </div>
-                                                <ShareIcon onClick={(e:any) => share2Public(e,imageUrl.id,1)}
-                                                           style={{ position: 'absolute', top: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.3)', borderRadius: '0 0 8px 8px',cursor:'pointer' }}
-                                                />
+                                        {column.map((imageUrl, index) => (
+                                            <div
+                                                key={index}
+                                                className={`image-item ${columnIndex + index * columnCount === hoveredIndex ? 'hovered' : ''}`}
+                                                onMouseEnter={() => handleMouseEnter(columnIndex, index)}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={{
+                                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                                    borderRadius: '8px',
+                                                    // overflow: 'hidden',
+                                                    marginBottom: '20px',
+                                                    position: 'relative', // 添加相对定位
+                                                }}
+                                            >
+
+                                                <PhotoView src={imageUrl.fileUrl}>
+                                                    <img
+                                                        // onClick={() => handleZoomIn(imageUrl.fileUrl)}
+                                                        src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                                </PhotoView>
+
+
+
+                                                {columnIndex + index * columnCount === hoveredIndex && (
+                                                    <div>
+                                                        <div className="image-text"
+                                                             onClick={() => {
+                                                                 copyToClipboard(imageUrl.prompt);
+                                                             }}
+                                                             style={{ cursor: 'pointer', position: 'absolute', bottom: '0', left: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: '0 0 8px 8px' }}>
+                                                            {imageUrl.prompt}
+                                                        </div>
+                                                        <ShareIcon onClick={(e:any) => share2Public(e,imageUrl.id,1)}
+                                                                   style={{ position: 'absolute', top: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.3)', borderRadius: '0 0 8px 8px',cursor:'pointer' }}
+                                                        />
+                                                    </div>
+
+                                                )}
                                             </div>
+                                        ))}
 
-                                        )}
                                     </div>
                                 ))}
-
+                            </PhotoProvider>
                             </div>
-                        ))}
-                        </PhotoProvider>
-                    </div>
-                    {mePageLast==0 && (
+                        )}
+
+
+                    {meImgCount > 0 && mePageLast==0 && (
                         <div style={{textAlign:'center'}}>
                             <a href='#' onClick={loadMoreMeDraw}>加载更多...</a>
                         </div>
@@ -334,55 +359,61 @@ export function Drawing() {
 
             {currentTab=='public' && (
                 <div style={{height:'100%'}}>
+                    {publicImgCount == 0 && (
+                        <div style={{textAlign:'center',marginTop:'50px'}}>
+                            <span>绘图市场暂时没有作品！</span>
+                        </div>
+                    )}
+                    {publicImgCount > 0 && (
+                        <div className="image-layout-container" style={{height:'66%' , display: 'grid', gridTemplateColumns: `repeat(${columnCount}, 1fr)`, gap: '20px', padding: '16px', overflowY: 'auto', maxHeight: 'calc(100vh - 32px)' }}>
+                            <PhotoProvider>
+                                {publicColumns.map((column, columnIndex) => (
+                                    <div key={columnIndex}>
+                                        {column.map((imageUrl, index) => (
+                                            <div
+                                                key={index}
+                                                className={`image-item ${columnIndex + index * columnCount === hoveredIndex ? 'hovered' : ''}`}
+                                                onMouseEnter={() => handleMouseEnter(columnIndex, index)}
+                                                onMouseLeave={handleMouseLeave}
+                                                style={{
+                                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                                    borderRadius: '8px',
+                                                    overflow: 'hidden',
+                                                    marginBottom: '20px',
+                                                    position: 'relative', // 添加相对定位
+                                                }}
+                                            >
+                                                <PhotoView src={imageUrl.fileUrl}>
+                                                    <img
+                                                        // onClick={() => handleZoomIn(imageUrl.fileUrl)}
+                                                        src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                                </PhotoView>
+                                                {columnIndex + index * columnCount === hoveredIndex && (
+                                                    <div>
+                                                        <div className="image-text"
+                                                             onClick={() => {
+                                                                 copyToClipboard(imageUrl.prompt);
+                                                             }}
+                                                             style={{cursor: 'pointer', position: 'absolute', bottom: '0', left: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: '0 0 8px 8px' }}>
+                                                            {imageUrl.prompt}
+                                                        </div>
 
-                    <div className="image-layout-container" style={{height:'66%' , display: 'grid', gridTemplateColumns: `repeat(${columnCount}, 1fr)`, gap: '20px', padding: '16px', overflowY: 'auto', maxHeight: 'calc(100vh - 32px)' }}>
+                                                        <DeleteIcon onClick={(e:any) => share2Public(e,imageUrl.id,0)}
+                                                                    style={{ position: 'absolute', top: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.3)', borderRadius: '0 0 8px 8px',cursor:'pointer' }}
+                                                        />
+                                                    </div>
 
-                        <PhotoProvider>
-                        {publicColumns.map((column, columnIndex) => (
-                            <div key={columnIndex}>
-                                {column.map((imageUrl, index) => (
-                                    <div
-                                        key={index}
-                                        className={`image-item ${columnIndex + index * columnCount === hoveredIndex ? 'hovered' : ''}`}
-                                        onMouseEnter={() => handleMouseEnter(columnIndex, index)}
-                                        onMouseLeave={handleMouseLeave}
-                                        style={{
-                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                            borderRadius: '8px',
-                                            overflow: 'hidden',
-                                            marginBottom: '20px',
-                                            position: 'relative', // 添加相对定位
-                                        }}
-                                    >
-                                        <PhotoView src={imageUrl.fileUrl}>
-                                            <img
-                                                // onClick={() => handleZoomIn(imageUrl.fileUrl)}
-                                                src={imageUrl.fileUrl} alt={`Image ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                                        </PhotoView>
-                                        {columnIndex + index * columnCount === hoveredIndex && (
-                                            <div>
-                                                <div className="image-text"
-                                                     onClick={() => {
-                                                         copyToClipboard(imageUrl.prompt);
-                                                     }}
-                                                     style={{cursor: 'pointer', position: 'absolute', bottom: '0', left: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: '0 0 8px 8px' }}>
-                                                    {imageUrl.prompt}
-                                                </div>
-
-                                                <DeleteIcon onClick={(e:any) => share2Public(e,imageUrl.id,0)}
-                                                            style={{ position: 'absolute', top: '0', right: '0', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.3)', borderRadius: '0 0 8px 8px',cursor:'pointer' }}
-                                                />
+                                                )}
                                             </div>
-
-                                        )}
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
 
-                    ))}
-                        </PhotoProvider>
-                </div>
-                    {publicPageLast==0 && (
+                                ))}
+                            </PhotoProvider>
+                        </div>
+                    )}
+
+                    {publicImgCount > 0 &&  publicPageLast==0 && (
                         <div style={{textAlign:'center'}}>
                             <a href='#' onClick={loadMorePublicDraw}>加载更多...</a>
                         </div>

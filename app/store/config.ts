@@ -46,7 +46,7 @@ export const DEFAULT_CONFIG = {
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gpt-3.5-turbo-(极速、联网支持)" as ModelType,
+    model: "GPT3.5-Turbo-(限免🔥🔥🔥-不支持联网)" as ModelType,
     temperature: 0.5,
     top_p: 1,
     max_tokens: 4000,

@@ -72,14 +72,15 @@ export class ChatGPTApi implements LLMApi {
     const messages = options.messages.map((v) => ({
       role: v.role,
       content: v.content,
+      fileImgList : v.fileMessages
     }));
     console.log(options.fileUrlList)
-    let fileImgList: { imgUrl: string }[] = [];
-    if(options.fileUrlList){
-      fileImgList = options.fileUrlList.map((v: any) => ({
-        imgUrl: v.imgUrl
-      }));
-    }
+    // let fileImgList: { imgUrl: string }[] = [];
+    // if(options.fileUrlList){
+    //   fileImgList = options.fileUrlList.map((v: any) => ({
+    //     imgUrl: v.imgUrl
+    //   }));
+    // }
 
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
@@ -90,7 +91,6 @@ export class ChatGPTApi implements LLMApi {
     };
 
     const requestPayload = {
-      fileImgList,
       messages,
       stream: options.config.stream,
       model: modelConfig.model,
@@ -161,7 +161,7 @@ export class ChatGPTApi implements LLMApi {
 
         controller.signal.onabort = finish;
 
-        fetchEventSource(`${API_BASE_URL}/new/chat/completions`, {
+        fetchEventSource(`${API_BASE_URL}/new/v1/chat/completions`, {
           ...chatPayload,
           async onopen(res) {
             clearTimeout(requestTimeoutId);
@@ -341,6 +341,7 @@ export class ChatGPTApi implements LLMApi {
     return chatModels.map((m) => ({
       name: m.id,
       available: true,
+      index: 0,
     }));
   }
 }

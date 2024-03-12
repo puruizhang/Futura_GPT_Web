@@ -32,6 +32,7 @@ export function createMessage(override: Partial<ChatMessage>): ChatMessage {
     date: new Date().toLocaleString(),
     role: "user",
     content: "",
+    fileMessages: [],
     ...override,
   };
 }
@@ -289,9 +290,17 @@ export const useChatStore = createPersistStore(
         // fileUrlEle = fileUrlEle + '</div>'
 
         // todo 拼接提问题的图片链接
+        console.log(fileUrlList)
+        const markdownImages = fileUrlList.map((file) => {
+          return `![](${file.imgUrl})`;
+        });
+
+        const markdownImagesString = markdownImages.join("\n"); // 使用换行符连接每个图片链接
+        console.log(markdownImagesString)
         const userMessage: ChatMessage = createMessage({
           role: "user",
-          content: userContent,
+          fileMessages: fileUrlList.map((file) => {return file.imgUrl}),
+          content: markdownImagesString+userContent,
         });
 
         const botMessage: ChatMessage = createMessage({

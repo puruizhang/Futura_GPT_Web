@@ -144,12 +144,6 @@ export function SideBar(props: { className?: string ,handleShowDismiss?:() => vo
     () => isIOS() && isMobileScreen,
     [isMobileScreen],
   );
-  // 已使用积分-gpt
-  const [pointsBalance, setPointsBalance] = useState(0);
-  // const [pointsFuturaBalance, setPointsFuturaBalance] = useState(0);
-  // 使用的限时免费的额度
-  const [pointsBalanceUseFreeTotal, setPointsBalanceUseFreeTotal] = useState(0);
-
   const [pointsBalanceTotal, setPointsBalanceTotal] = useState(0);
   const [isHidden, setIsHidden] = useState(false);
   const handleWidthChange = () => {
@@ -164,9 +158,6 @@ export function SideBar(props: { className?: string ,handleShowDismiss?:() => vo
     }
 
   };
-  // 已使用积分
-  // const [pointsBalance, setPointsBalance] = useState(0);
-  // const [pointsBalanceTotal, setPointsBalanceTotal] = useState(0);
   //
   const getPoint = (first : boolean) =>{
     if(accessStore.accessCode){
@@ -180,20 +171,7 @@ export function SideBar(props: { className?: string ,handleShowDismiss?:() => vo
           .then(data => {
             // 处理返回的用户信息数据
             if(data.success){
-              setPointsBalanceTotal(data.data.pointsBalanceTotal);
-              setPointsBalanceUseFreeTotal(data.data.pointsBalanceUseFreeTotal);
-              setPointsBalance(data.data.pointsBalanceUseTotal);
-              // let timeoutId;
-              // for(let i=0; i<data.data.pointsBalanceUseTotal; i++){
-              //   timeoutId = setTimeout(() => {
-              //     // 这里放置要执行的代码
-              //     setPointsBalance(i)
-              //   }, 100);
-              // }
-              // clearTimeout(timeoutId);
-              // if(!first){
-              //   showToast('刷新成功！')
-              // }
+              setPointsBalanceTotal(data.data);
             }else{
               showToast('请求频繁,请稍后再试！')
             }
@@ -287,7 +265,9 @@ export function SideBar(props: { className?: string ,handleShowDismiss?:() => vo
           </div>
           <div className={styles["sidebar-action"]}>
             <Link to={Path.Settings}>
-              <IconButton icon={<SettingsIcon />} shadow />
+              <IconButton
+                  text='设置'
+                  icon={<SettingsIcon />} shadow />
             </Link>
           </div>
 
@@ -318,7 +298,7 @@ export function SideBar(props: { className?: string ,handleShowDismiss?:() => vo
         <DragIcon />
       </div>
       <div
-        className={styles["sidebar-body"]} style={{height:'900px'}}
+        className={styles["sidebar-body"]} style={{height:'80%',minHeight:'400px'}}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             navigate(Path.Home);
@@ -345,7 +325,7 @@ export function SideBar(props: { className?: string ,handleShowDismiss?:() => vo
           </div>
           <div style={{'marginBottom': '5px',color:'#666464'}}>
             <BrainIcon width={20} />
-            <span>积分：{pointsBalance} / {pointsBalanceTotal}</span>
+            <span>剩余积分：{pointsBalanceTotal}</span>
             <ResetIcon style={{'marginLeft':'10px','cursor':'pointer'}} onClick={() => getPoint(false)}/>
             <br/>
             {/*<BrainIcon width={20} />*/}
